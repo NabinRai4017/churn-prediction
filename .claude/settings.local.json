@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kedro run:*)",
+      "Bash(make:*)",
+      "Bash(pip show:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pip install:*)",
+      "Bash(python -c:*)",
+      "Bash(kedro registry list:*)"
+    ]
+  }
+}

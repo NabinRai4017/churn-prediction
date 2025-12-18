@@ -1,0 +1,29 @@
+# MLflow configuration for Kedro
+# Documentation: https://kedro-mlflow.readthedocs.io/
+
+server:
+  mlflow_tracking_uri: mlruns
+
+tracking:
+  disable_tracking:
+    pipelines: []
+
+  experiment:
+    name: churn_prediction
+    restore_if_deleted: true
+
+  run:
+    id: null
+    name: null
+    nested: true
+
+  params:
+    dict_params:
+      flatten: true
+      recursive: true
+      sep: "."
+    long_params_strategy: truncate
+
+ui:
+  port: "5000"
+  host: "127.0.0.1"

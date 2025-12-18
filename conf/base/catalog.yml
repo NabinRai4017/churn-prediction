@@ -1,0 +1,175 @@
+# Here you can define all your datasets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+
+# Raw data
+customers:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/telco-customer-churn.csv
+
+# Intermediate datasets (data processing pipeline)
+customers_no_id:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/customers_no_id.parquet
+
+customers_numeric:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/customers_numeric.parquet
+
+customers_cleaned:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/customers_cleaned.parquet
+
+customers_binary_encoded:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/customers_binary_encoded.parquet
+
+customers_encoded:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/customers_encoded.parquet
+
+# Primary data (preprocessed)
+preprocessed_customers:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/preprocessed_customers.parquet
+
+# Feature engineering intermediate datasets
+customers_with_service_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/customers_with_service_features.parquet
+
+customers_with_tenure_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/customers_with_tenure_features.parquet
+
+customers_with_contract_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/customers_with_contract_features.parquet
+
+customers_with_charge_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/customers_with_charge_features.parquet
+
+# Final engineered features
+features_engineered:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/features_engineered.parquet
+
+# Model input datasets (train/test splits)
+X_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_train.parquet
+
+X_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_test.parquet
+
+y_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y_train.parquet
+
+y_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y_test.parquet
+
+# Trained models
+logistic_regression_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/logistic_regression_model.pkl
+
+random_forest_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/random_forest_model.pkl
+
+gradient_boosting_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/gradient_boosting_model.pkl
+
+best_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/best_model.pkl
+
+# Hyperparameter tuning outputs
+optuna_study:
+  type: pickle.PickleDataset
+  filepath: data/06_models/optuna_study.pkl
+
+best_hyperparameters:
+  type: json.JSONDataset
+  filepath: data/07_model_output/best_hyperparameters.json
+
+tuned_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/tuned_model.pkl
+
+tuned_model_metrics:
+  type: json.JSONDataset
+  filepath: data/07_model_output/tuned_model_metrics.json
+
+tuning_report:
+  type: json.JSONDataset
+  filepath: data/07_model_output/tuning_report.json
+
+# Model output (metrics and reports)
+lr_metrics:
+  type: json.JSONDataset
+  filepath: data/07_model_output/lr_metrics.json
+
+rf_metrics:
+  type: json.JSONDataset
+  filepath: data/07_model_output/rf_metrics.json
+
+gb_metrics:
+  type: json.JSONDataset
+  filepath: data/07_model_output/gb_metrics.json
+
+model_comparison:
+  type: json.JSONDataset
+  filepath: data/07_model_output/model_comparison.json
+
+feature_importance:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/feature_importance.parquet
+
+# Reporting outputs
+model_comparison_report:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/model_comparison_report.csv
+
+confusion_matrix_report:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/confusion_matrix_report.csv
+
+feature_importance_report:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/feature_importance_report.csv
+
+detailed_metrics_report:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/detailed_metrics_report.csv
+
+executive_summary:
+  type: text.TextDataset
+  filepath: data/08_reporting/executive_summary.txt
+
+# Visualization outputs (plot metadata - actual plots saved directly to data/08_reporting/plots/)
+model_comparison_plot:
+  type: json.JSONDataset
+  filepath: data/08_reporting/plots/model_comparison_meta.json
+
+confusion_matrices_plot:
+  type: json.JSONDataset
+  filepath: data/08_reporting/plots/confusion_matrices_meta.json
+
+feature_importance_plot:
+  type: json.JSONDataset
+  filepath: data/08_reporting/plots/feature_importance_meta.json
+
+metrics_radar_plot:
+  type: json.JSONDataset
+  filepath: data/08_reporting/plots/metrics_radar_meta.json
+
+churn_summary_plot:
+  type: json.JSONDataset
+  filepath: data/08_reporting/plots/churn_summary_meta.json
