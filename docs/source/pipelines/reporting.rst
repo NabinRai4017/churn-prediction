@@ -48,7 +48,7 @@ A ranked comparison of all trained models showing:
 * F1 Score
 * ROC-AUC
 
-Models are sorted by the selection metric (default: F1 Score).
+Models are sorted by the selection metric (default: Recall).
 
 2. Confusion Matrix Report
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -251,8 +251,8 @@ Sample Output
    EXECUTIVE SUMMARY
    -----------------
 
-   1. BEST PERFORMING MODEL: Random Forest
-      Selected based on: F1 Score
+   1. BEST PERFORMING MODEL: Logistic Regression
+      Selected based on: Recall
 
    2. KEY PERFORMANCE METRICS:
       - Accuracy:  80.21%

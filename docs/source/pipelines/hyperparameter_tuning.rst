@@ -46,7 +46,7 @@ The hyperparameter search is configured in ``conf/base/parameters.yml``:
 
    hyperparameter_tuning:
      n_trials: 50              # Number of Optuna trials
-     optimization_metric: "f1_score"  # Metric to optimize
+     optimization_metric: "recall"  # Metric to optimize
      cv_folds: 5               # Cross-validation folds
      random_state: 42          # Random seed for reproducibility
      direction: "maximize"     # Optimization direction
@@ -208,7 +208,7 @@ Sample tuning report summary:
 
    {
      "model_name": "random_forest",
-     "optimization_metric": "f1_score",
+     "optimization_metric": "recall",
      "baseline_score": 0.62,
      "tuned_score": 0.67,
      "improvement": 0.05,

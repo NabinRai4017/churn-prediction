@@ -166,7 +166,7 @@ Trains and evaluates multiple classification models:
 - Accuracy, Precision, Recall, F1 Score, ROC-AUC
 - Confusion Matrix (TN, FP, FN, TP)
 
-**Model Selection:** Best model selected based on F1 Score (configurable)
+**Model Selection:** Best model selected based on Recall (configurable)
 
 ### 4. Hyperparameter Tuning Pipeline
 
@@ -261,7 +261,7 @@ model_training:
   target_column: "Churn"
   test_size: 0.2
   random_state: 42
-  selection_metric: "f1_score"  # Options: accuracy, precision, recall, f1_score, roc_auc
+  selection_metric: "recall"  # Options: accuracy, precision, recall, f1_score, roc_auc
 
   logistic_regression:
     C: 1.0

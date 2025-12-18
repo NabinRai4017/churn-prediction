@@ -156,16 +156,16 @@ Evaluates each trained model on the test set.
 
 Compares all models and selects the best one based on the configured selection metric.
 
-**Default Selection Metric:** ``f1_score``
+**Default Selection Metric:** ``recall``
 
-**Why F1 Score?**
+**Why Recall?**
 
-For churn prediction, both precision and recall matter:
+For churn prediction, identifying churners is the priority:
 
-* **High Precision**: Avoid wasting retention resources on non-churners
-* **High Recall**: Identify as many churners as possible
+* **High Recall**: Identify as many churners as possible to enable retention efforts
+* Missing a churner (false negative) is costlier than incorrectly flagging a non-churner
 
-F1 balances both concerns. Can be changed to ``roc_auc`` or ``recall`` if needed.
+Recall prioritizes catching all potential churners. Can be changed to ``f1_score`` or ``roc_auc`` if needed.
 
 **MLflow Logging:**
 
@@ -201,7 +201,7 @@ Configuration
      target_column: "Churn"
      test_size: 0.2
      random_state: 42
-     selection_metric: "f1_score"
+     selection_metric: "recall"
 
      logistic_regression:
        C: 1.0
@@ -285,7 +285,7 @@ The dataset has imbalanced classes (~27% churn). This is handled by:
 
 1. **Stratified splitting**: Maintains class ratio in train/test
 2. **class_weight="balanced"**: Adjusts class weights inversely proportional to frequency
-3. **F1 score selection**: Balances precision and recall
+3. **Recall-based selection**: Prioritizes identifying churners
 
 Data Validation
 ---------------

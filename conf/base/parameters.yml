@@ -1,7 +1,7 @@
 # Hyperparameter Tuning Parameters
 hyperparameter_tuning:
   n_trials: 50
-  optimization_metric: "f1_score"
+  optimization_metric: "recall"
   cv_folds: 5
   random_state: 42
   direction: "maximize"
@@ -62,6 +62,7 @@ hyperparameter_tuning:
       high: 10
 
 
+
 # Model Training Parameters
 model_training:
   # Data split parameters
@@ -70,7 +71,7 @@ model_training:
   random_state: 42
 
   # Model selection metric (accuracy, precision, recall, f1_score, roc_auc)
-  selection_metric: "f1_score"
+  selection_metric: "recall"
 
   # Logistic Regression parameters
   logistic_regression:
@@ -93,3 +94,4 @@ model_training:
     max_depth: 3
     min_samples_split: 2
     min_samples_leaf: 1
+

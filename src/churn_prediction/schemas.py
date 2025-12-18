@@ -198,6 +198,9 @@ class FeaturesEngineeredSchema(pa.DataFrameModel):
     charge_per_service: Series[float]
     is_high_charges: Series[int] = pa.Field(isin=[0, 1])
     charge_tenure_ratio: Series[float]
+    avg_monthly_spend: Series[float]
+    tenure_normalized: Series[float]
+    value_consistency: Series[float]
 
     # Interaction features
     high_risk_combo: Series[int] = pa.Field(isin=[0, 1])

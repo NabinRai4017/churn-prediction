@@ -11,6 +11,7 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
     confusion_matrix,
+    precision_recall_curve,
 )
 import mlflow
 import mlflow.sklearn
@@ -227,6 +228,129 @@ def train_gradient_boosting(
     logger.info("Gradient Boosting model trained successfully")
 
     return model
+
+
+def train_xgboost(
+    X_train: pd.DataFrame, y_train: pd.DataFrame, parameters: Dict[str, Any]
+) -> Any:
+    """Trains an XGBoost model with MLflow logging.
+
+    XGBoost handles class imbalance via scale_pos_weight parameter,
+    which is calculated as the ratio of negative to positive samples.
+
+    Args:
+        X_train: Training features
+        y_train: Training target (DataFrame with single column)
+        parameters: Model parameters
+
+    Returns:
+        Trained XGBClassifier model
+    """
+    if not XGBOOST_AVAILABLE:
+        raise ImportError(
+            "XGBoost is not installed. Please install it with: pip install xgboost"
+        )
+
+    model_params = parameters.get("xgboost", {})
+
+    # Extract series from DataFrame
+    y = y_train.iloc[:, 0]
+
+    # Calculate scale_pos_weight for class imbalance
+    # ratio of negative to positive samples
+    neg_count = (y == 0).sum()
+    pos_count = (y == 1).sum()
+    scale_pos_weight = neg_count / pos_count if pos_count > 0 else 1.0
+
+    # Get parameters
+    n_estimators = model_params.get("n_estimators", 100)
+    learning_rate = model_params.get("learning_rate", 0.1)
+    max_depth = model_params.get("max_depth", 6)
+    min_child_weight = model_params.get("min_child_weight", 1)
+    subsample = model_params.get("subsample", 0.8)
+    colsample_bytree = model_params.get("colsample_bytree", 0.8)
+    random_state = parameters.get("random_state", 42)
+
+    model = XGBClassifier(
+        n_estimators=n_estimators,
+        learning_rate=learning_rate,
+        max_depth=max_depth,
+        min_child_weight=min_child_weight,
+        subsample=subsample,
+        colsample_bytree=colsample_bytree,
+        scale_pos_weight=scale_pos_weight,
+        random_state=random_state,
+        eval_metric="logloss",
+        use_label_encoder=False,
+    )
+
+    model.fit(X_train, y)
+
+    # Log parameters to MLflow
+    mlflow.log_params({
+        "xgb_n_estimators": n_estimators,
+        "xgb_learning_rate": learning_rate,
+        "xgb_max_depth": max_depth,
+        "xgb_min_child_weight": min_child_weight,
+        "xgb_subsample": subsample,
+        "xgb_colsample_bytree": colsample_bytree,
+        "xgb_scale_pos_weight": scale_pos_weight,
+    })
+
+    logger.info(f"XGBoost model trained successfully (scale_pos_weight={scale_pos_weight:.2f})")
+
+    return model
+
+
+def find_optimal_threshold(
+    y_true: np.ndarray, y_pred_proba: np.ndarray, optimize_for: str = "recall"
+) -> Tuple[float, Dict[str, float]]:
+    """Finds the optimal classification threshold for a given metric.
+
+    Args:
+        y_true: True labels
+        y_pred_proba: Predicted probabilities for positive class
+        optimize_for: Metric to optimize ('recall', 'f1_score', 'precision')
+
+    Returns:
+        Tuple of (optimal_threshold, metrics_at_threshold)
+    """
+    precision_arr, recall_arr, thresholds = precision_recall_curve(y_true, y_pred_proba)
+
+    # Calculate F1 for each threshold
+    f1_scores = 2 * (precision_arr[:-1] * recall_arr[:-1]) / (
+        precision_arr[:-1] + recall_arr[:-1] + 1e-10
+    )
+
+    if optimize_for == "recall":
+        # Find threshold that achieves high recall (e.g., >0.8) with best precision
+        target_recall = 0.80
+        valid_indices = recall_arr[:-1] >= target_recall
+        if valid_indices.any():
+            # Among thresholds with recall >= target, find one with best precision
+            valid_f1 = f1_scores.copy()
+            valid_f1[~valid_indices] = 0
+            best_idx = np.argmax(valid_f1)
+        else:
+            # Fallback to highest recall
+            best_idx = np.argmax(recall_arr[:-1])
+    elif optimize_for == "f1_score":
+        best_idx = np.argmax(f1_scores)
+    elif optimize_for == "precision":
+        best_idx = np.argmax(precision_arr[:-1])
+    else:
+        best_idx = np.argmax(f1_scores)
+
+    optimal_threshold = thresholds[best_idx]
+
+    metrics = {
+        "threshold": optimal_threshold,
+        "precision": precision_arr[best_idx],
+        "recall": recall_arr[best_idx],
+        "f1_score": f1_scores[best_idx],
+    }
+
+    return optimal_threshold, metrics
 
 
 def evaluate_model(

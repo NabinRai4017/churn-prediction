@@ -169,6 +169,9 @@ def create_charge_features(data: pd.DataFrame) -> pd.DataFrame:
     - charge_per_service: Monthly charges divided by total services
     - is_high_charges: Above 75th percentile monthly charges
     - charge_tenure_ratio: Monthly charges relative to tenure
+    - avg_monthly_spend: Average monthly spend over tenure
+    - tenure_normalized: Tenure normalized to 0-1 range (max ~72 months)
+    - value_consistency: Ratio of expected vs actual total charges
     """
     df = data.copy()
 
@@ -181,6 +184,17 @@ def create_charge_features(data: pd.DataFrame) -> pd.DataFrame:
 
     # Charge-tenure ratio
     df["charge_tenure_ratio"] = df["MonthlyCharges"] / (df["tenure"] + 1e-6)
+
+    # Average monthly spend over tenure (TotalCharges / tenure)
+    df["avg_monthly_spend"] = df["TotalCharges"] / (df["tenure"] + 1e-6)
+
+    # Normalized tenure (0-1 range, max tenure is ~72 months)
+    df["tenure_normalized"] = df["tenure"] / 72.0
+
+    # Value consistency: how consistent is the customer's spending
+    # Expected total = MonthlyCharges * tenure, actual = TotalCharges
+    expected_total = df["MonthlyCharges"] * (df["tenure"] + 1e-6)
+    df["value_consistency"] = df["TotalCharges"] / (expected_total + 1e-6)
 
     return df
 
@@ -229,5 +243,5 @@ def create_interaction_features(data: pd.DataFrame) -> DataFrame[FeaturesEnginee
     df["has_family"] = ((df["Partner"] == 1) | (df["Dependents"] == 1)).astype(int)
 
     logger.info(f"Feature engineering complete. Final shape: {df.shape}")
-    logger.info(f"New features created: 22")
+    logger.info("New features created: 25")
     return df
