@@ -1,0 +1,10 @@
+Collecting imbalanced-learn
+  Downloading imbalanced_learn-0.14.0-py3-none-any.whl.metadata (8.8 kB)
+Requirement already satisfied: numpy<3,>=1.25.2 in /Users/nabin/miniconda/envs/kedro-test/lib/python3.11/site-packages (from imbalanced-learn) (1.26.4)
+Requirement already satisfied: scipy<2,>=1.11.4 in /Users/nabin/miniconda/envs/kedro-test/lib/python3.11/site-packages (from imbalanced-learn) (1.16.3)
+Requirement already satisfied: scikit-learn<2,>=1.4.2 in /Users/nabin/miniconda/envs/kedro-test/lib/python3.11/site-packages (from imbalanced-learn) (1.5.2)
+Requirement already satisfied: joblib<2,>=1.2.0 in /Users/nabin/miniconda/envs/kedro-test/lib/python3.11/site-packages (from imbalanced-learn) (1.5.2)
+Requirement already satisfied: threadpoolctl<4,>=2.0.0 in /Users/nabin/miniconda/envs/kedro-test/lib/python3.11/site-packages (from imbalanced-learn) (3.6.0)
+Downloading imbalanced_learn-0.14.0-py3-none-any.whl (239 kB)
+Installing collected packages: imbalanced-learn
+Successfully installed imbalanced-learn-0.14.0

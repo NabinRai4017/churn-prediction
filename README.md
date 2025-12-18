@@ -4,6 +4,7 @@
 [![MLflow](https://img.shields.io/badge/MLflow-tracking-blue?logo=mlflow)](https://mlflow.org)
 [![Optuna](https://img.shields.io/badge/Optuna-hyperparameter_tuning-blue)](https://optuna.org)
 [![Pandera](https://img.shields.io/badge/Pandera-data_validation-green)](https://pandera.readthedocs.io)
+[![XGBoost](https://img.shields.io/badge/XGBoost-enabled-orange)](https://xgboost.readthedocs.io)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
 
 A machine learning project to predict customer churn using the Telco Customer Churn dataset. Built with Kedro for pipeline orchestration and MLflow for experiment tracking.
@@ -15,8 +16,11 @@ This project predicts whether a telecom customer will churn (leave the service) 
 ### Key Features
 
 - **Modular Kedro Pipelines** - 5 distinct pipelines for data processing, feature engineering, model training, hyperparameter tuning, and reporting
-- **Multiple ML Models** - Logistic Regression, Random Forest, and Gradient Boosting classifiers
-- **Automated Feature Engineering** - Creates 22 derived features from raw data
+- **Multiple ML Models** - Logistic Regression, Random Forest, Gradient Boosting, XGBoost, and Voting Ensemble
+- **Ensemble Methods** - Voting Ensemble combining all models with soft voting for improved predictions
+- **Class Imbalance Handling** - SMOTE support, balanced class weights, and XGBoost scale_pos_weight
+- **Automated Feature Engineering** - Creates 25 derived features from raw data
+- **Feature Selection** - Optional SelectKBest with ANOVA F-test for dimensionality reduction
 - **Optuna Hyperparameter Tuning** - Automated hyperparameter optimization with 50 trials and cross-validation
 - **Pandera Data Validation** - Schema-based DataFrame validation throughout the pipeline
 - **MLflow Integration** - Full experiment tracking, parameter logging, and model registry
@@ -161,12 +165,18 @@ Trains and evaluates multiple classification models:
 | **Logistic Regression** | Baseline linear model with balanced class weights |
 | **Random Forest** | Ensemble of 100 decision trees |
 | **Gradient Boosting** | Sequential boosting with 100 estimators |
+| **XGBoost** | Extreme Gradient Boosting with regularization (requires libomp on macOS) |
+| **Voting Ensemble** | Soft voting combination of all models |
+
+**Additional Features:**
+- **SMOTE**: Optional synthetic minority oversampling (disabled by default)
+- **Feature Selection**: Optional SelectKBest for dimensionality reduction
 
 **Evaluation Metrics:**
 - Accuracy, Precision, Recall, F1 Score, ROC-AUC
 - Confusion Matrix (TN, FP, FN, TP)
 
-**Model Selection:** Best model selected based on Recall (configurable)
+**Model Selection:** Best model selected based on F1 Score (configurable)
 
 ### 4. Hyperparameter Tuning Pipeline
 
@@ -261,7 +271,19 @@ model_training:
   target_column: "Churn"
   test_size: 0.2
   random_state: 42
-  selection_metric: "recall"  # Options: accuracy, precision, recall, f1_score, roc_auc
+  selection_metric: "f1_score"  # Options: accuracy, precision, recall, f1_score, roc_auc
+
+  # SMOTE for class imbalance (disabled by default)
+  smote:
+    enabled: false
+    sampling_strategy: "auto"
+    k_neighbors: 5
+
+  # Voting Ensemble configuration
+  voting_ensemble:
+    enabled: true
+    voting: "soft"
+    weights: [1, 1, 1]
 
   logistic_regression:
     C: 1.0
@@ -271,14 +293,18 @@ model_training:
   random_forest:
     n_estimators: 100
     max_depth: 10
-    min_samples_split: 2
-    min_samples_leaf: 1
     class_weight: "balanced"
 
   gradient_boosting:
     n_estimators: 100
     learning_rate: 0.1
     max_depth: 3
+
+  xgboost:
+    n_estimators: 100
+    learning_rate: 0.1
+    max_depth: 6
+    subsample: 0.8
 ```
 
 ### Hyperparameter Tuning Configuration
@@ -323,16 +349,18 @@ Sample model performance (results may vary):
 
 | Model | Accuracy | Precision | Recall | F1 Score | ROC-AUC |
 |-------|----------|-----------|--------|----------|---------|
-| Logistic Regression | 74.4% | 51.1% | 78.1% | 61.8% | 0.843 |
-| Random Forest | 76.8% | 54.9% | 70.6% | 61.8% | 0.836 |
-| Gradient Boosting | 79.6% | 64.3% | 51.6% | 57.3% | 0.836 |
+| Logistic Regression | 74.4% | 51.1% | 77.8% | 61.7% | 0.842 |
+| XGBoost | 75.9% | 53.4% | 71.4% | 61.1% | 0.832 |
+| Random Forest | 76.9% | 55.2% | 68.2% | 61.0% | 0.835 |
+| Voting Ensemble | 76.7% | 54.9% | 67.9% | 60.7% | 0.842 |
+| Gradient Boosting | 80.4% | 66.2% | 53.5% | 59.2% | 0.837 |
 
 **Top Churn Predictors:**
-1. Tenure (customer lifetime)
-2. Contract type (month-to-month vs annual)
-3. Monthly charges
-4. Total services subscribed
-5. Payment method (electronic check)
+1. InternetService_Fiber optic
+2. Monthly charges
+3. Tenure (customer lifetime)
+4. Contract type (Two year)
+5. has_long_contract
 
 ## Documentation
 
@@ -390,4 +418,6 @@ This project is licensed under the MIT License.
 - [Optuna](https://optuna.org/) - Hyperparameter optimization
 - [Pandera](https://pandera.readthedocs.io/) - Data validation
 - [Scikit-learn](https://scikit-learn.org/) - Machine learning library
+- [XGBoost](https://xgboost.readthedocs.io/) - Gradient boosting library
+- [imbalanced-learn](https://imbalanced-learn.org/) - SMOTE implementation
 - [Telco Customer Churn Dataset](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) - Data source

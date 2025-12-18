@@ -73,6 +73,15 @@ y_test:
   type: pandas.ParquetDataset
   filepath: data/05_model_input/y_test.parquet
 
+# SMOTE resampled training data
+X_train_smote:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_train_smote.parquet
+
+y_train_smote:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y_train_smote.parquet
+
 # Trained models
 logistic_regression_model:
   type: pickle.PickleDataset
@@ -85,6 +94,14 @@ random_forest_model:
 gradient_boosting_model:
   type: pickle.PickleDataset
   filepath: data/06_models/gradient_boosting_model.pkl
+
+voting_ensemble_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/voting_ensemble_model.pkl
+
+xgboost_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/xgboost_model.pkl
 
 best_model:
   type: pickle.PickleDataset
@@ -123,6 +140,14 @@ rf_metrics:
 gb_metrics:
   type: json.JSONDataset
   filepath: data/07_model_output/gb_metrics.json
+
+ve_metrics:
+  type: json.JSONDataset
+  filepath: data/07_model_output/ve_metrics.json
+
+xgb_metrics:
+  type: json.JSONDataset
+  filepath: data/07_model_output/xgb_metrics.json
 
 model_comparison:
   type: json.JSONDataset
